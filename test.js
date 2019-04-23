@@ -55,7 +55,8 @@ return html;
 }
 
 function table(){
-    var tree = document.createDocumentFragment();
+    /*
+var tree = document.createDocumentFragment();
 var link = document.createElement("a");
 link.setAttribute("id", "id1");
 link.setAttribute("href", "http://site.com");
@@ -68,9 +69,7 @@ div.appendChild(document.createTextNode("texten"));
 tree.appendChild(link);
 tree.appendChild(div);
 document.getElementById("table").appendChild(tree);
-
-
-
+*/
 
 }
 

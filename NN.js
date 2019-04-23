@@ -22,7 +22,6 @@ class NeuralNetwork {
         this.outputLayer = new Layer(this.outputs, 0);
     }
 
-
     forward(nodes) {
         nextLayer = Functions.sigmoid(Functions.matrixMultiplication(this.inputLayer.weights, nodes));
         for (i = 0; i < this.hiddenLayers.length; i++) {
@@ -44,15 +43,15 @@ class Layer {
 
     get initializeWeightsOnNodes() {
         this.weights = new Array(this.nodes);
-        var i,j;
+        var i, j;
         for (i = 0; i < this.nodes; i++) {
             this.weights[i] = new Array(this.nextLayerNodes);
             for (j = 0; j < this.nextLayerNodes; j++) {
-                this.weights[i][j] = 2 * Math.random()-1; //Random -1 to 1
+                this.weights[i][j] = 2 * Math.random() - 1; //Random -1 to 1
             }
         }
         return this.weights;
-    }   
+    }
 }
 
 
@@ -73,22 +72,24 @@ class Functions {
         for (i = 0; i < weights.length; i++) {
             weightsOnNode = weights[i];
             for (j = 0; j < weightsOnNode.length; j++) {
-                result.push(weightsOnNode[j] * nodes[i]) 
+                result.push(weightsOnNode[j] * nodes[i])
             }
         }
         return result;
     }
 }
 
-function createNN(){
-    nn = new NeuralNetwork(3,1,1,1);
+function createNN() {
+    nn = new NeuralNetwork(2, 5, 1, 2);
 }
 
-function getNumberOfNodes(){
-    console.log(rect.inputs);
-    document.getElementById("numberOfInputs").innerHTML = nn.inputs;
+function getNumberOfNodes() {
+    //console.log(rect.inputs);
+    //document.getElementById("numberOfInputs").innerHTML = nn.inputs;
+
     var i;
     var j;
+    /*
     for(i = 0; i < nn.inputs; i++){
         for(j = 0; j < nn.inputLayer.nextLayerNodes;j++){
             var span = document.createElement("SPAN");
@@ -105,8 +106,72 @@ function getNumberOfNodes(){
             
         }
     }
+    var div = document.createElement("div");
+    div.classList.add("block");
+    document.body.appendChild(div);
+
+    
     var y;
-    for(i = 0; i < nn.layers;i++){
-        
+    for(i = 0; i < nn.hiddenLayers.length;i++){
+        for(j = 0; j < nn.hiddenLayers[i].nodes; j++){
+            for(y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++){
+            console.log(i + " " + j + " " + y);
+            
+            var span = document.createElement("SPAN");
+            span.classList.add("dot");
+            var size = Math.floor((1+nn.hiddenLayers[i].weights[i][y])*20);
+            size.toString();
+            span.style.width=size.toString()+"px";
+            span.style.height=size.toString()+"px";
+            var t = document.createTextNode(size.toString());
+            span.appendChild(t);
+            document.body.appendChild(span);
+            }
+        }
+        var div = document.createElement("div");
+        div.classList.add("block");
+        document.body.appendChild(div);
     }
+*/
+
+    for (i = 0; i < nn.inputs; i++) {
+        var span = document.createElement("SPAN");
+        span.classList.add("dot");
+        var size = Math.floor(20);
+        span.style.width = size.toString() + "px";
+        span.style.height = size.toString() + "px";
+        document.body.appendChild(span);
+    }
+    var div = document.createElement("div");
+    div.classList.add("block");
+    document.body.appendChild(div);
+
+    for (i = 0; i < nn.hiddenLayers.length; i++) {
+        for (j = 0; j < nn.hiddenLayers[i].nodes; j++) {
+            var span = document.createElement("SPAN");
+            span.classList.add("dot");
+            var size = Math.floor(20);
+            span.style.width = size.toString() + "px";
+            span.style.height = size.toString() + "px";
+            document.body.appendChild(span);
+        }
+        var div = document.createElement("div");
+        div.classList.add("block");
+        document.body.appendChild(div);
+    }
+    var div = document.createElement("div");
+    div.classList.add("block");
+    document.body.appendChild(div);
+
+    for (i = 0; i < nn.outputs; i++) {
+        var span = document.createElement("SPAN");
+        span.classList.add("dot");
+        var size = Math.floor(20);
+        span.style.width = size.toString() + "px";
+        span.style.height = size.toString() + "px";
+        document.body.appendChild(span);
+    }
+    var div = document.createElement("div");
+    div.classList.add("block");
+    document.body.appendChild(div);
 }
