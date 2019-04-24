@@ -58,120 +58,119 @@ class Layer {
 class Functions {
 
     static sigmoid(x) {
-        for (i = 0; i < x.length; i++) {
-            node = x[i];
-            for (j = 0; j < node.length; j++) {
-                node[j] = 1 / (1 + Math.exp(-node[j]));
+        if (x[0].constructor == Array) {
+            for (var i = 0; i < x.length; i++) {
+                for (var j = 0; j < x[0].length; j++) {
+                    x[i][j] = 1 / (1 + Math.exp(-x[i][j]));
+                }
             }
         }
+        for (var j = 0; j < x.length; j++) {
+            x[j] = 1 / (1 + Math.exp(-x[j]));
+        }
+
         return x;
     }
 
-    static matrixMultiplication(weights, nodes) {
+    static matrixMultiplication(x, y) {
         result = new Array();
-        for (i = 0; i < weights.length; i++) {
-            weightsOnNode = weights[i];
-            for (j = 0; j < weightsOnNode.length; j++) {
-                result.push(weightsOnNode[j] * nodes[i])
+        if (y[0].constructor == Array) {
+            for (var i = 0; i < x; i++) {
+                innerResult = new Array();
+                for (var h = 0; h < y.length; h++) {
+                    var temp = 0;
+                    for (var j = 0; j < x.length; j++) {
+                        temp += x[j][i] * y[h][j];
+                    }
+                    innerResult.push(temp);
+                }
+                result.push(innerResult);
+            }
+        } else {
+            for (var i = 0; i < x.length; i++) {
+
+                for (var j = 0; j < x[i].length; j++) {
+                    result.push(x[i][j] * y[i])
+                }
             }
         }
         return result;
     }
 }
 
+function forwardNetwork(inputs) {
+    var data = Functions.sigmoid(inputs);
+    data = Functions.matrixMultiplication(nn.inputLayer.weights, data);
+
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        data = Functions.sigmoid(data);
+        data = Functions.matrixMultiplication(nn.hiddenLayers[i].weights, data);
+    }
+    return data;
+}
+
+function backpropagation(facit, trainingData) {
+
+}
+
 function createNN() {
-    nn = new NeuralNetwork(2, 5, 1, 2);
+    nn = new NeuralNetwork(2, 3, 4, 3);
 }
 
 function getNumberOfNodes() {
     //console.log(rect.inputs);
     //document.getElementById("numberOfInputs").innerHTML = nn.inputs;
 
-    var i;
-    var j;
-    /*
-    for(i = 0; i < nn.inputs; i++){
-        for(j = 0; j < nn.inputLayer.nextLayerNodes;j++){
-            var span = document.createElement("SPAN");
-            span.classList.add("dot");
-            var size = Math.floor((1+nn.inputLayer.weights[i][j])*20);
-            size.toString();
-            span.style.width=size.toString()+"px";
-            span.style.height=size.toString()+"px";
-            var t = document.createTextNode(size.toString());
-            span.appendChild(t);
-            document.body.appendChild(span);
-           
-        
-            
+
+    var svg = d3.select("#dataviz_area")
+    var paddingNodes = 100;
+
+    for (var i = 0; i < nn.inputs; i++) {
+        for (var j = 0; j < nn.inputLayer.nextLayerNodes; j++) {
+            svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
+                .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
+
+            var container = document.getElementById("inputs");
+            var input = document.createElement("INPUT");
+            input.type = "text";
+            input.className = "css-class-name";
+            container.appendChild(input);
         }
     }
-    var div = document.createElement("div");
-    div.classList.add("block");
-    document.body.appendChild(div);
 
-    
-    var y;
-    for(i = 0; i < nn.hiddenLayers.length;i++){
-        for(j = 0; j < nn.hiddenLayers[i].nodes; j++){
-            for(y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++){
-            console.log(i + " " + j + " " + y);
-            
-            var span = document.createElement("SPAN");
-            span.classList.add("dot");
-            var size = Math.floor((1+nn.hiddenLayers[i].weights[i][y])*20);
-            size.toString();
-            span.style.width=size.toString()+"px";
-            span.style.height=size.toString()+"px";
-            var t = document.createTextNode(size.toString());
-            span.appendChild(t);
-            document.body.appendChild(span);
+
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
+            for (var y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++) {
+                svg.append("line").attr("x1", 60 + paddingNodes * i).attr("y1", 40 + paddingNodes * j).attr("x2", paddingNodes + 60 + paddingNodes * i).attr("y2", 40 + paddingNodes * y)
+                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
             }
         }
-        var div = document.createElement("div");
-        div.classList.add("block");
-        document.body.appendChild(div);
     }
-*/
 
-    for (i = 0; i < nn.inputs; i++) {
-        var span = document.createElement("SPAN");
-        span.classList.add("dot");
-        var size = Math.floor(20);
-        span.style.width = size.toString() + "px";
-        span.style.height = size.toString() + "px";
-        document.body.appendChild(span);
+
+
+    for (var i = 0; i < nn.inputs; i++) {
+        svg.append("circle")
+            .attr("cx", 20).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
     }
-    var div = document.createElement("div");
-    div.classList.add("block");
-    document.body.appendChild(div);
-
-    for (i = 0; i < nn.hiddenLayers.length; i++) {
-        for (j = 0; j < nn.hiddenLayers[i].nodes; j++) {
-            var span = document.createElement("SPAN");
-            span.classList.add("dot");
-            var size = Math.floor(20);
-            span.style.width = size.toString() + "px";
-            span.style.height = size.toString() + "px";
-            document.body.appendChild(span);
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
+            svg.append("circle")
+                .attr("cx", 60 + paddingNodes * i).attr("cy", 40 + paddingNodes * j).attr("r", 10).style("fill", "blue");
         }
-        var div = document.createElement("div");
-        div.classList.add("block");
-        document.body.appendChild(div);
     }
-    var div = document.createElement("div");
-    div.classList.add("block");
-    document.body.appendChild(div);
+    for (var i = 0; i < nn.outputs; i++) {
+        svg.append("circle")
+            .attr("cx", 60 + paddingNodes * nn.hiddenLayers.length).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
+    }
 
-    for (i = 0; i < nn.outputs; i++) {
-        var span = document.createElement("SPAN");
-        span.classList.add("dot");
-        var size = Math.floor(20);
-        span.style.width = size.toString() + "px";
-        span.style.height = size.toString() + "px";
-        document.body.appendChild(span);
-    }
-    var div = document.createElement("div");
-    div.classList.add("block");
-    document.body.appendChild(div);
 }
+
+
+//show the NN in graph:
+
+
+
+
+
