@@ -55,61 +55,19 @@ class Layer {
 }
 
 
-class Functions {
-
-    static sigmoid(x) {
-        if (x[0].constructor == Array) {
-            for (var i = 0; i < x.length; i++) {
-                for (var j = 0; j < x[0].length; j++) {
-                    x[i][j] = 1 / (1 + Math.exp(-x[i][j]));
-                }
-            }
-        } else {
-            for (var j = 0; j < x.length; j++) {
-                x[j] = 1 / (1 + Math.exp(-x[j]));
-               
-            }
-        }
-        return x;
-    }
-
-    static matrixMultiplication(x, y) {
-        var result = new Array();
-        if (y[0].constructor == Array) {
-            for (var i = 0; i < x; i++) {
-                innerResult = new Array();
-                for (var h = 0; h < y.length; h++) {
-                    var temp = 0;
-                    for (var j = 0; j < x.length; j++) {
-                        temp += x[j][i] * y[h][j];
-                    }
-                    innerResult.push(temp);
-                }
-                result.push(innerResult);
-            }
-        } else {
-            for (var i = 0; i < x.length; i++) {
-                for (var j = 0; j < x[i].length; j++) {
-                    result.push(x[i][j] * y[i])
-                }
-            }
-        }
-        return result;
-    }
-}
-
 function forwardNetwork() {
     var data = [];
     for (var i = 0; i < nn.inputs; i++) {
         data[i] = document.getElementById("input" + i.toString()).value;
     }
 
-    data = Functions.sigmoid(data);
-    data = Functions.matrixMultiplication(nn.inputLayer.weights, data);
+    data = sigmoid(data);
+    data = matrixMultiplication(nn.inputLayer.weights, data);
 
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        data = Functions.sigmoid(data);
-        data = Functions.matrixMultiplication(nn.hiddenLayers[i].weights, data);
+        data = sigmoid(data);
+        data = matrixMultiplication(nn.hiddenLayers[i].weights, data);
+      
     }
     for (var i = 0; i < nn.outputs; i++) {
         document.getElementById("output" + i.toString()).value = data[i];
