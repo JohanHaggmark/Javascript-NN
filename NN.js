@@ -64,16 +64,17 @@ class Functions {
                     x[i][j] = 1 / (1 + Math.exp(-x[i][j]));
                 }
             }
+        } else {
+            for (var j = 0; j < x.length; j++) {
+                x[j] = 1 / (1 + Math.exp(-x[j]));
+               
+            }
         }
-        for (var j = 0; j < x.length; j++) {
-            x[j] = 1 / (1 + Math.exp(-x[j]));
-        }
-
         return x;
     }
 
     static matrixMultiplication(x, y) {
-        result = new Array();
+        var result = new Array();
         if (y[0].constructor == Array) {
             for (var i = 0; i < x; i++) {
                 innerResult = new Array();
@@ -88,7 +89,6 @@ class Functions {
             }
         } else {
             for (var i = 0; i < x.length; i++) {
-
                 for (var j = 0; j < x[i].length; j++) {
                     result.push(x[i][j] * y[i])
                 }
@@ -98,13 +98,21 @@ class Functions {
     }
 }
 
-function forwardNetwork(inputs) {
-    var data = Functions.sigmoid(inputs);
+function forwardNetwork() {
+    var data = [];
+    for (var i = 0; i < nn.inputs; i++) {
+        data[i] = document.getElementById("input" + i.toString()).value;
+    }
+
+    data = Functions.sigmoid(data);
     data = Functions.matrixMultiplication(nn.inputLayer.weights, data);
 
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
         data = Functions.sigmoid(data);
         data = Functions.matrixMultiplication(nn.hiddenLayers[i].weights, data);
+    }
+    for (var i = 0; i < nn.outputs; i++) {
+        document.getElementById("output" + i.toString()).value = data[i];
     }
     return data;
 }
@@ -114,7 +122,7 @@ function backpropagation(facit, trainingData) {
 }
 
 function createNN() {
-    nn = new NeuralNetwork(2, 3, 4, 3);
+    nn = new NeuralNetwork(3, 3, 5, 2);
 }
 
 function getNumberOfNodes() {
@@ -129,15 +137,8 @@ function getNumberOfNodes() {
         for (var j = 0; j < nn.inputLayer.nextLayerNodes; j++) {
             svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
                 .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
-
-            var container = document.getElementById("inputs");
-            var input = document.createElement("INPUT");
-            input.type = "text";
-            input.className = "css-class-name";
-            container.appendChild(input);
         }
     }
-
 
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
         for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
@@ -148,11 +149,19 @@ function getNumberOfNodes() {
         }
     }
 
-
-
     for (var i = 0; i < nn.inputs; i++) {
         svg.append("circle")
             .attr("cx", 20).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
+        var container = document.getElementById("inputs");
+        var input = document.createElement("INPUT");
+        input.type = "text";
+        input.className = "css-class-name";
+        input.style.top = 50 + paddingNodes * i + "px";
+        input.style.left = "10px";
+        input.style.position = "absolute";
+        input.size = 5;
+        input.id = "input" + i.toString();
+        container.appendChild(input);
     }
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
         for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
@@ -163,6 +172,18 @@ function getNumberOfNodes() {
     for (var i = 0; i < nn.outputs; i++) {
         svg.append("circle")
             .attr("cx", 60 + paddingNodes * nn.hiddenLayers.length).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
+        var container = document.getElementById("inputs");
+        var input = document.createElement("INPUT");
+        input.type = "text";
+        input.className = "css-class-name";
+        input.style.top = 50 + paddingNodes * i + "px";
+        input.style.left = 60 + paddingNodes * nn.hiddenLayers.length + "px";
+        input.style.position = "absolute";
+        input.size = 5;
+        input.id = "output" + i.toString();
+        container.appendChild(input);
+
+
     }
 
 }
