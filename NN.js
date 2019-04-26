@@ -1,4 +1,6 @@
 let nn;
+var svg;
+var paddingNodes;
 
 class NeuralNetwork {
     //number of: input-nodes, hidden-nodes, output-nodes, hidden-layers
@@ -7,7 +9,7 @@ class NeuralNetwork {
         this.hiddens = hiddens;
         this.outputs = outputs;
         this.layers = layers;
-
+        this.facit = new Array();
         //creating input layer
         this.inputLayer = new Layer(this.inputs, this.hiddens);
         //creating hidden layers
@@ -21,13 +23,6 @@ class NeuralNetwork {
         //creating output layer
         this.outputLayer = new Layer(this.outputs, 0);
     }
-
-    forward(nodes) {
-        nextLayer = Functions.sigmoid(Functions.matrixMultiplication(this.inputLayer.weights, nodes));
-        for (i = 0; i < this.hiddenLayers.length; i++) {
-            nextLayer = Functions.sigmoid(Functions.matrixMultiplication(hiddenLayers.weights, nextLayer));
-        }
-    }
 }
 
 
@@ -35,6 +30,9 @@ class Layer {
     constructor(nodes, nextLayerNodes) {
         this.nodes = nodes;
         this.nextLayerNodes = nextLayerNodes;
+        this.delta;
+        this.error;
+        this.trainingData = new Array();
         //all layers except outputlayer:
         if (this.nextLayerNodes > 0) {
             this.weights = this.initializeWeightsOnNodes;
@@ -56,56 +54,89 @@ class Layer {
 
 
 function forwardNetwork() {
+    var data;
+    
+    data = sigmoid(nn.inputLayer.trainingData);
+    data = matrixMultiplication(data, nn.inputLayer.weights);
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        nn.hiddenLayers[i].trainingData = data;
+        data = sigmoid(nn.hiddenLayers[i].trainingData);
+        data = matrixMultiplication(data, nn.hiddenLayers[i].weights);  
+    }
+    data = sigmoid(data);
+    nn.outputLayer.trainingData = data;
+    for (var i = 0; i < nn.outputs; i++) {
+        document.getElementById("output" + i.toString()).value = data[0][i];
+    }
+    setMeanError(data, nn.facit);
+    return data;
+}
+
+function forward(){
+   
     var data = [];
     for (var i = 0; i < nn.inputs; i++) {
         data[i] = document.getElementById("input" + i.toString()).value;
     }
-
     data = sigmoid(data);
-    data = matrixMultiplication(nn.inputLayer.weights, data);
-
+    data = matrixMultiplication(data, nn.inputLayer.weights);
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        data = sigmoid(data);
-        data = matrixMultiplication(nn.hiddenLayers[i].weights, data);
-      
+        nn.hiddenLayers[i].trainingData = data;
+        data = sigmoid(nn.hiddenLayers[i].trainingData);
+        data = matrixMultiplication(data, nn.hiddenLayers[i].weights);  
+       
     }
+    data = sigmoid(data);
+    nn.outputLayer.trainingData = data;
+    var facit = [];
     for (var i = 0; i < nn.outputs; i++) {
+        facit[i] = document.getElementById("output" + i.toString()).value;
         document.getElementById("output" + i.toString()).value = data[i];
     }
+
+    setMeanError(data, facit);
     return data;
 }
 
-function backpropagation(facit, trainingData) {
+function backpropagationLoop(){
+    for(var i = 0; i < 10; i++){
+        backpropagation();
+    }
+    document.getElementById("error").value = meanValue(nn.outputLayer.error);
+    updateLines();
+}
 
+function backpropagation() {
+    nn.outputLayer.error = difference(nn.outputLayer.trainingData, nn.facit);
+    var delta = arrayProduct(nn.outputLayer.error, sigmoidPrime(nn.outputLayer.trainingData));
+    for(var i = nn.layers-1; i >= 0; i--){
+        //alert("delta: " + delta + " weights: " + nn.hiddenLayers[i].weights);
+        nn.hiddenLayers[i].error = matrixMultiplication(delta, reverse(nn.hiddenLayers[i].weights));
+        nn.hiddenLayers[i].delta = arrayProduct(nn.hiddenLayers[i].error, sigmoidPrime(nn.hiddenLayers[i].trainingData));
+        var weights = matrixMultiplication(reverse(nn.hiddenLayers[i].trainingData),delta);  
+        weights = mean(weights);
+        nn.hiddenLayers[i].weights = sumArrays(weights, nn.hiddenLayers[i].weights);
+        delta = nn.hiddenLayers[i].delta;
+        //weights = lambda(rate, weights);
+    }
+    weights = matrixMultiplication( reverse(nn.inputLayer.trainingData), delta)
+    weights = mean(weights);
+    nn.inputLayer.weights = sumArrays(weights, nn.inputLayer.weights);
+}
+
+function setMeanError(data, facit){
+    //alert("data: " + data + " faciit: " + nn.facit);
+   document.getElementById("error").value = meanValue(data) - meanValue(facit);
 }
 
 function createNN() {
-    nn = new NeuralNetwork(3, 3, 5, 2);
+    nn = new NeuralNetwork(4, 3, 2, 2);
 }
 
 function getNumberOfNodes() {
-    //console.log(rect.inputs);
-    //document.getElementById("numberOfInputs").innerHTML = nn.inputs;
-
-
-    var svg = d3.select("#dataviz_area")
-    var paddingNodes = 100;
-
-    for (var i = 0; i < nn.inputs; i++) {
-        for (var j = 0; j < nn.inputLayer.nextLayerNodes; j++) {
-            svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
-                .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
-        }
-    }
-
-    for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
-            for (var y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++) {
-                svg.append("line").attr("x1", 60 + paddingNodes * i).attr("y1", 40 + paddingNodes * j).attr("x2", paddingNodes + 60 + paddingNodes * i).attr("y2", 40 + paddingNodes * y)
-                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
-            }
-        }
-    }
+    svg = d3.select("#dataviz_area");
+    paddingNodes = 100;
+    updateLines();
 
     for (var i = 0; i < nn.inputs; i++) {
         svg.append("circle")
@@ -119,6 +150,7 @@ function getNumberOfNodes() {
         input.style.position = "absolute";
         input.size = 5;
         input.id = "input" + i.toString();
+        input.value = 0.4;
         container.appendChild(input);
     }
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
@@ -139,14 +171,44 @@ function getNumberOfNodes() {
         input.style.position = "absolute";
         input.size = 5;
         input.id = "output" + i.toString();
+        input.value = 0.1;
         container.appendChild(input);
-
-
     }
-
 }
 
+function pushTrainingData(){
+    
+    var data = [];
+    for (var i = 0; i < nn.inputs; i++) {
+        data[i] = document.getElementById("input" + i.toString()).value;
+    }
+    nn.inputLayer.trainingData.push(data);
+    document.getElementById("trainingInputsText").value = nn.inputLayer.trainingData;
+    data = [];
+    for(var i = 0; i < nn.outputs; i++){
+        data[i] = document.getElementById("output" + i.toString()).value;
+    }
+    nn.facit.push(data);
+    document.getElementById("trainingOutputsText").value = nn.facit;
+}
 
+function updateLines(){
+    for (var i = 0; i < nn.inputs; i++) {
+        for (var j = 0; j < nn.inputLayer.nextLayerNodes; j++) {
+            svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
+                .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
+        }
+    }
+
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
+            for (var y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++) {
+                svg.append("line").attr("x1", 60 + paddingNodes * i).attr("y1", 40 + paddingNodes * j).attr("x2", paddingNodes + 60 + paddingNodes * i).attr("y2", 40 + paddingNodes * y)
+                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
+            }
+        }
+    }
+}
 //show the NN in graph:
 
 

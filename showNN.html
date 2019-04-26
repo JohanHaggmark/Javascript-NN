@@ -32,11 +32,20 @@
     <div>
         <span id="inputs"></span>
         <span>
-            <svg id="dataviz_area" height=500 width=500></svg>
+            <svg id="dataviz_area" height=400 width=500></svg>
         </span>
     </div>
     <div id="runNetwork">
-        <button id="forward" onclick="forwardNetwork()">Forward</button>
+        <button id="forward" onclick="forward()">Forward</button>
+        <button id="forwardTraining" onclick="forwardNetwork()">Forward Training Data</button>
+        <button id="pushTrainingData" onclick="pushTrainingData()">Push Traning Data</button>
+        <button id="backPropagate" onclick="backpropagationLoop()">Backpropagation</button>
+        <span id="trainingInputs"></span>
+        <textarea id="trainingInputsText"></textarea>
+        <textarea id="trainingOutputsText"></textarea>
+    </div>
+    <div>
+        <textarea id="error">error</textarea>
     </div>
 </body>
 
