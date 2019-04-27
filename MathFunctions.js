@@ -29,7 +29,6 @@ function sigmoidPrime(x) {
     } else {
         for (var j = 0; j < x.length; j++) {
             result[j] = x[j] * (1 - x[j]);
-
         }
     }
     return result;
@@ -136,7 +135,7 @@ function meanValue(x){
         return temp/(x.length * x[0].length);
     } else {
         for(var i = 0; i < x.length; i++){
-            temp += x[i];
+            temp += 1 * x[i];
         }
         return temp / x.length;
     }
