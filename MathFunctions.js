@@ -140,3 +140,19 @@ function meanValue(x){
         return temp / x.length;
     }
 }
+
+function lambda(rate, x){
+    if (x[0].constructor == Array) {
+        for(var i = 0; i < x.length; i++){
+            for(var j = 0; j < x[0].length; j++){
+                x[i][j] = rate * x[i][j];
+            }
+        }
+        return x;
+    } else {
+        for(var i = 0; i < x.length; i++){
+            x[i] = rate * x[i];
+        }
+        return x;
+    }
+}
