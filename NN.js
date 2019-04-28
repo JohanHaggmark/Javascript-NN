@@ -144,7 +144,7 @@ function pushTrainingData() {
 }
 
 function createNN() {
-    nn = new NeuralNetwork(3, 8, 2, 2);
+    nn = new NeuralNetwork(3, 8, 2, 1);
 }
 
 
