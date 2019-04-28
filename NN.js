@@ -1,6 +1,10 @@
 let nn;
 var svg;
 var paddingNodes;
+var paddingHidden;
+var paddingInput;
+var paddingOutput;
+var paddingLayers;
 
 class NeuralNetwork {
     //number of: input-nodes, hidden-nodes, output-nodes, hidden-layers
@@ -52,15 +56,13 @@ class Layer {
     }
 }
 
-//caöö this when running multiple sets of data. e.g. training data.
-function forwardNetwork() {
+//call this when running multiple sets of data. e.g. training data.
+function forwardTrainingData() {
     var data;
     //visualize inputs
-    for(var i = 0; i < nn.inputs; i++){
+    for (var i = 0; i < nn.inputs; i++) {
         document.getElementById("input" + i.toString()).value = nn.inputLayer.trainingData[0][i];
     }
-
-   
     data = matrixMultiplication(nn.inputLayer.trainingData, nn.inputLayer.weights);
     data = sigmoid(data);
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
@@ -79,38 +81,23 @@ function forwardNetwork() {
 
 //call this when running only 1 set of data.
 function forward() {
-
     var data = [];
     for (var i = 0; i < nn.inputs; i++) {
         data[i] = document.getElementById("input" + i.toString()).value;
-    } 
-    
+    }
     data = matrixMultiplication(data, nn.inputLayer.weights);
     data = sigmoid(data);
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        //nn.hiddenLayers[i].trainingData = data;
         data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
         data = sigmoid(data);
     }
-
-    //nn.outputLayer.trainingData = data;
     var facit = [];
     for (var i = 0; i < nn.outputs; i++) {
         facit[i] = document.getElementById("output" + i.toString()).value;
         document.getElementById("output" + i.toString()).value = data[i];
     }
-
     setMeanError(data, facit);
     return data;
-}
-
-function backpropagationLoop() {
-    for (var i = 0; i < 10; i++) {
-        backpropagation();
-        forwardNetwork();
-    }
-   // document.getElementById("error").value = meanValue(nn.outputLayer.error);
-    updateLines();
 }
 
 function backpropagation() {
@@ -131,56 +118,22 @@ function backpropagation() {
     nn.inputLayer.weights = sumArrays(weights, nn.inputLayer.weights);
 }
 
+function trainNetwork() {
+    //to get some effect of backpropagation, it should be run multiple times
+    for (var i = 0; i < 10; i++) {
+        backpropagation();
+        forwardTrainingData();
+    }
+    updateLines();
+}
+
 function setMeanError(data, facit) {
     //alert("data: " + data + " faciit: " + nn.facit);
     document.getElementById("error").value = meanValue(data) - meanValue(facit);
 }
 
 function createNN() {
-    nn = new NeuralNetwork(4, 6, 3, 3);
-}
-
-function getNumberOfNodes() {
-    svg = d3.select("#dataviz_area");
-    paddingNodes = 100;
-    updateLines();
-
-    for (var i = 0; i < nn.inputs; i++) {
-        svg.append("circle")
-            .attr("cx", 20).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
-        var container = document.getElementById("inputs");
-        var input = document.createElement("INPUT");
-        input.type = "text";
-        input.className = "css-class-name";
-        input.style.top = 50 + paddingNodes * i + "px";
-        input.style.left = "10px";
-        input.style.position = "absolute";
-        input.size = 5;
-        input.id = "input" + i.toString();
-        input.value = Math.random();
-        container.appendChild(input);
-    }
-    for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
-            svg.append("circle")
-                .attr("cx", 60 + paddingNodes * i).attr("cy", 40 + paddingNodes * j).attr("r", 10).style("fill", "blue");
-        }
-    }
-    for (var i = 0; i < nn.outputs; i++) {
-        svg.append("circle")
-            .attr("cx", 60 + paddingNodes * nn.hiddenLayers.length).attr("cy", 40 + paddingNodes * i).attr("r", 10).style("fill", "blue");
-        var container = document.getElementById("inputs");
-        var input = document.createElement("INPUT");
-        input.type = "text";
-        input.className = "css-class-name";
-        input.style.top = 50 + paddingNodes * i + "px";
-        input.style.left = 60 + paddingNodes * nn.hiddenLayers.length + "px";
-        input.style.position = "absolute";
-        input.size = 5;
-        input.id = "output" + i.toString();
-        input.value = Math.random();
-        container.appendChild(input);
-    }
+    nn = new NeuralNetwork(2, 4, 2, 2);
 }
 
 function pushTrainingData() {
@@ -197,38 +150,105 @@ function pushTrainingData() {
     }
     nn.facit.push(data);
     document.getElementById("trainingOutputsText").value = nn.facit;
+    forwardTrainingData();
+}
+
+function getNumberOfNodes() {
+    svg = d3.select("#dataviz_area");
+    var width = svg.attr("width");
+    var height = svg.attr("height");
+    paddingNodes = 100;
+    paddingInput = height / (nn.inputs + 1);
+    paddingHidden = height / (nn.hiddens + 1);
+    paddingOutput = height / (nn.outputs + 1);
+    paddingLayers = width / (nn.layers + 3);
+    updateLines();
+
+    for (var i = 0; i < nn.inputs; i++) {
+
+        svg.append("circle")
+            .attr("cx", paddingLayers).attr("cy", paddingInput + paddingInput * i).attr("r", 5).style("fill", "blue");
+        var container = document.getElementById("inputs");
+        var input = document.createElement("INPUT");
+        input.type = "text";
+        input.className = "css-class-name";
+        input.style.top = paddingInput + paddingInput * i + "px";
+        input.style.left = paddingLayers - 65 + "px";
+        input.style.position = "absolute";
+        input.size = 4;
+        input.id = "input" + i.toString();
+        input.value = Math.random();
+        container.appendChild(input);
+    }
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
+            svg.append("circle")
+                .attr("cx", paddingLayers * 2 + paddingLayers * i).attr("cy", paddingHidden + paddingHidden * j).attr("r", 5).style("fill", "blue");
+        }
+    }
+    for (var i = 0; i < nn.outputs; i++) {
+        svg.append("circle")
+            .attr("cx", paddingLayers * (nn.layers + 2)).attr("cy", paddingOutput + paddingOutput * i).attr("r", 5).style("fill", "blue");
+        var container = document.getElementById("inputs");
+        var input = document.createElement("INPUT");
+        input.type = "text";
+        input.className = "css-class-name";
+        input.style.top = paddingOutput + paddingOutput * i + "px";
+        input.style.left = 20 + paddingLayers * (nn.layers + 2) + "px";
+        input.style.position = "absolute";
+        input.size = 4;
+        input.id = "output" + i.toString();
+        input.value = Math.random();
+        container.appendChild(input);
+    }
 }
 
 function updateLines() {
+    //input lines
     for (var i = 0; i < nn.inputs; i++) {
         for (var j = 0; j < nn.inputLayer.nextLayerNodes; j++) {
             if (nn.inputLayer.weights[i][j] > 0) {
-                svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
-                .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
-             } else {
-                svg.append("line").attr("x1", 20).attr("y1", 40 + paddingNodes * i).attr("x2", 60).attr("y2", 40 + paddingNodes * j)
-                .attr("stroke-width", 1).attr("stroke", "red").style("opacity", -nn.inputLayer.weights[i][j]);
-   
-             }
-     }
+                svg.append("line").attr("x1", paddingLayers).attr("y1", paddingInput + paddingInput * i).attr("x2", paddingLayers * 2).attr("y2", paddingHidden + paddingHidden * j)
+                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.inputLayer.weights[i][j]);
+            } else {
+                svg.append("line").attr("x1", paddingLayers).attr("y1", paddingInput + paddingInput * i).attr("x2", paddingLayers * 2).attr("y2", paddingHidden + paddingHidden * j)
+                    .attr("stroke-width", 1).attr("stroke", "red").style("opacity", -nn.inputLayer.weights[i][j]);
+
+            }
+        }
     }
 
-
-    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+    //hidden lines
+    for (var i = 0; i < nn.hiddenLayers.length - 1; i++) {
         for (var j = 0; j < nn.hiddenLayers[i].nodes; j++) {
             for (var y = 0; y < nn.hiddenLayers[i].nextLayerNodes; y++) {
                 if (nn.hiddenLayers[i].weights[j][y] > 0) {
-                    svg.append("line").attr("x1", 60 + paddingNodes * i).attr("y1", 40 + paddingNodes * j).attr("x2", paddingNodes + 60 + paddingNodes * i).attr("y2", 40 + paddingNodes * y)
-                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
+                    svg.append("line").attr("x1", paddingLayers * 2 + paddingLayers * i).attr("y1", paddingHidden + paddingHidden * j).attr("x2", paddingLayers * 3 + paddingLayers * i).attr("y2", paddingHidden + paddingHidden * y)
+                        .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
                 } else {
-                    svg.append("line").attr("x1", 60 + paddingNodes * i).attr("y1", 40 + paddingNodes * j).attr("x2", paddingNodes + 60 + paddingNodes * i).attr("y2", 40 + paddingNodes * y)
-                    .attr("stroke-width", 1).attr("stroke", "red").style("opacity", -nn.hiddenLayers[i].weights[j][y]);
-   
+                    svg.append("line").attr("x1", paddingLayers * 2 + paddingLayers * i).attr("y1", paddingHidden + paddingHidden * j).attr("x2", paddingLayers * 3 + paddingLayers * i).attr("y2", paddingHidden + paddingHidden * y)
+                        .attr("stroke-width", 1).attr("stroke", "red").style("opacity", -nn.hiddenLayers[i].weights[j][y]);
+
                 }
-                  
+
             }
 
         }
+    }
+    //output lines
+    for (var j = 0; j < nn.hiddenLayers[nn.hiddenLayers.length - 1].nodes; j++) {
+        for (var y = 0; y < nn.hiddenLayers[nn.hiddenLayers.length - 1].nextLayerNodes; y++) {
+            if (nn.hiddenLayers[i].weights[j][y] > 0) {
+                svg.append("line").attr("x1", paddingLayers * 2 + paddingLayers * i).attr("y1", paddingHidden + paddingHidden * j).attr("x2", paddingLayers * (nn.layers + 2)).attr("y2", paddingOutput + paddingOutput * y)
+                    .attr("stroke-width", 1).attr("stroke", "black").style("opacity", nn.hiddenLayers[i].weights[j][y]);
+            } else {
+                svg.append("line").attr("x1", paddingLayers * 2 + paddingLayers * i).attr("y1", paddingHidden + paddingHidden * j).attr("x2", paddingLayers * (nn.layers + 2)).attr("y2", paddingOutput + paddingOutput * y)
+                    .attr("stroke-width", 1).attr("stroke", "red").style("opacity", -nn.hiddenLayers[i].weights[j][y]);
+
+            }
+
+        }
+
     }
 }
 //show the NN in graph:
