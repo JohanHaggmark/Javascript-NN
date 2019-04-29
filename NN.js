@@ -106,7 +106,7 @@ function backpropagation() {
         nn.hiddenLayers[i].weights = sumArrays(weights, nn.hiddenLayers[i].weights);
         delta = nn.hiddenLayers[i].delta;  
     }
-    weights = matrixMultiplication(reverse(nn.inputLayer.trainingData), delta)
+    weights = matrixMultiplication(reverse(nn.inputLayer.trainingData), delta);
     weights = mean(weights);
     //weights = lambda(rate, weights); //if the learning rate is not satisfying
     nn.inputLayer.weights = sumArrays(weights, nn.inputLayer.weights);
@@ -114,7 +114,7 @@ function backpropagation() {
 
 function trainNetwork() {
     //to get some effect of backpropagation, it should be run multiple times
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 10; i++) {
         backpropagation();
         forwardTrainingData();
     }
@@ -148,10 +148,10 @@ function createNN() {
 }
 
 function createNN2(){
-    var inputs = document.getElementById("createInputs").value;
-    var hiddens = document.getElementById("createHiddens").value;
-    var outputs = document.getElementById("createOutputs").value;
-    var layers = document.getElementById("createLayers").value;
+    var inputs = Number(document.getElementById("createInputs").value);
+    var hiddens = Number(document.getElementById("createHiddens").value);
+    var outputs = Number(document.getElementById("createOutputs").value);
+    var layers = Number(document.getElementById("createLayers").value);
     nn = new NeuralNetwork(inputs, hiddens, outputs, layers);
     getNumberOfNodes();
 }
