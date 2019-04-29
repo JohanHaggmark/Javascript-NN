@@ -1,5 +1,6 @@
 
 function sigmoid(x) {
+
     var result = new Array();
     if (x[0].constructor == Array) {
         for (var i = 0; i < x.length; i++) {

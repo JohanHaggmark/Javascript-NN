@@ -114,7 +114,7 @@ function backpropagation() {
 
 function trainNetwork() {
     //to get some effect of backpropagation, it should be run multiple times
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 50; i++) {
         backpropagation();
         forwardTrainingData();
     }
@@ -144,7 +144,16 @@ function pushTrainingData() {
 }
 
 function createNN() {
-    nn = new NeuralNetwork(3, 8, 2, 1);
+    nn = new NeuralNetwork(4, 8, 3, 2);
+}
+
+function createNN2(){
+    var inputs = document.getElementById("createInputs").value;
+    var hiddens = document.getElementById("createHiddens").value;
+    var outputs = document.getElementById("createOutputs").value;
+    var layers = document.getElementById("createLayers").value;
+    nn = new NeuralNetwork(inputs, hiddens, outputs, layers);
+    getNumberOfNodes();
 }
 
 

@@ -1,11 +1,13 @@
 
 /*To use this Training set. The network must be defined as:
 nn = new NeuralNetwork(3, x, 2, y);
-*/
 
 inputData = [[1,1,0],[0,1,0],[0.1,0.1,1], [0,1,1],[1,1,1], [1,1,0]];
-
 facit = [[1,0],[0,1],[0,1],[0,1],[1,1],[1,0.5]];
+*/
+
+inputData=[[1,0,0,0],[1,1,0,0],[0,0,0,1],[0,0,1,1]];
+facit = [[1,0,0],[0,1,0],[0,0,1],[0,1,0]];
 
 function setTrainingData() {
     nn.inputLayer.trainingData = inputData;
