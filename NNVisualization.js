@@ -19,7 +19,6 @@ function getNumberOfNodes() {
     updateLines();
 
     for (var i = 0; i < nn.inputs; i++) {
-
         svg.append("circle")
             .attr("cx", paddingLayers).attr("cy", paddingInput + paddingInput * i).attr("r", 5).style("fill", "blue");
         var container = document.getElementById("inputs");
@@ -49,7 +48,7 @@ function getNumberOfNodes() {
         input.type = "text";
         input.className = "css-class-name";
         input.style.top = paddingOutput + paddingOutput * i + "px";
-        input.style.left = 20 + paddingLayers * (nn.layers * 1 + 2) + "px";
+        input.style.left = 20 + paddingLayers * (nn.layers + 2) + "px";
         input.style.position = "absolute";
         input.size = 4;
         input.id = "output" + i.toString();
