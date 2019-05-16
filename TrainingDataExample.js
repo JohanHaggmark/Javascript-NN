@@ -21,16 +21,16 @@ function setTrainingData() {
 function train() {
     let batchSize = Number(document.getElementById("batchSize").value);
     let rows = Number(document.getElementById("rows").value);
+    for (let i = 0; i < rows; i++) {
+        setAmountTrainingData(batchSize, inputData);
+    }
     //visualize inputs
     for (var i = 0; i < nn.inputs; i++) {
         document.getElementById("input" + i.toString()).value = nn.inputLayer.trainingData[0][i];
     }
-    for (let i = 0; i < rows; i++) {
-        setAmountTrainingData(batchSize, inputData);
-    }
     //visualize result
     for (var i = 0; i < nn.outputs; i++) {
-        document.getElementById("output" + i.toString()).value = data[0][i];
+        document.getElementById("output" + i.toString()).value = nn.outputLayer.trainingData[0][i];
     }
     updateGraph();
 }
