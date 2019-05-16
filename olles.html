@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,12 +12,23 @@
     <script>
     </script>
 </head>
-<body onload="start()">
 
+<body onload="start()">
+    <div>
         <textarea id="input">InputString</textarea>
-        <button onclick="stringToNetwork(getElementById('input').value)">forward network</button>
         <textarea id="output">Output</textarea>
-        
-    
+    </div>
+    <div>
+        <button onclick="forwardString(getElementById('input').value)">forward network</button>
+        <button onclick="storeStringAsTrainingData(getElementById('input').value, getElementById('output').value)">Store string</button>
+    </div>
+    <div>
+        <button onclick="trainNetwork()">Train Network</button>
+    </div>
+    <div>
+        <textarea id="error">Error value</textarea>
+   </div>
+
 </body>
+
 </html>
