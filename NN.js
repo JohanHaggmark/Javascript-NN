@@ -77,16 +77,17 @@ function forward() {
     var data = [];
     for (var i = 0; i < nn.inputs; i++) {
         data[i] = document.getElementById("input" + i.toString()).value;
-    }
+    }   
     data = matrixMultiplication(data, nn.inputLayer.weights);
     data = sigmoid(data);
-    for (var i = 0; i < nn.hiddenLayers.length; i++) {
-        data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
-        data = sigmoid(data);
-    }
+        for (var i = 0; i < nn.hiddenLayers.length; i++) {
+            data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
+            data = sigmoid(data);
+        }
     var facit = [];
     for (var i = 0; i < nn.outputs; i++) {
         facit[i] = document.getElementById("output" + i.toString()).value;
+        console.log(facit[i]);
         document.getElementById("output" + i.toString()).value = data[i];
     }
     setMeanError(data, facit);
@@ -104,7 +105,7 @@ function backpropagation() {
         weights = mean(weights);
         //weights = lambda(rate, weights); //if the learning rate is not satisfying
         nn.hiddenLayers[i].weights = sumArrays(weights, nn.hiddenLayers[i].weights);
-        delta = nn.hiddenLayers[i].delta;  
+        delta = nn.hiddenLayers[i].delta;
     }
     weights = matrixMultiplication(reverse(nn.inputLayer.trainingData), delta);
     weights = mean(weights);
@@ -115,10 +116,9 @@ function backpropagation() {
 function trainNetwork() {
     //to get some effect of backpropagation, it should be run multiple times
     for (var i = 0; i < 10; i++) {
-        backpropagation();
         forwardTrainingData();
+        backpropagation();      
     }
-    updateLines();
 }
 
 function setMeanError(data, facit) {
@@ -147,13 +147,13 @@ function createNN() {
     nn = new NeuralNetwork(4, 8, 3, 2);
 }
 
-function createNN2(){
+function createNN2() {
     var inputs = Number(document.getElementById("createInputs").value);
     var hiddens = Number(document.getElementById("createHiddens").value);
     var outputs = Number(document.getElementById("createOutputs").value);
     var layers = Number(document.getElementById("createLayers").value);
     nn = new NeuralNetwork(inputs, hiddens, outputs, layers);
-    getNumberOfNodes();
+    drawGraph();
 }
 
 

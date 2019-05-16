@@ -24,6 +24,7 @@ function train() {
     for (let i = 0; i < rows; i++) {
         setAmountTrainingData(batchSize, inputData);
     }
+    updateGraph();
 }
 
 function setAmountTrainingData(batchSize, data) {
@@ -38,8 +39,7 @@ function setAmountTrainingData(batchSize, data) {
     }
     nn.inputLayer.trainingData = batchData;
     nn.facit = batchFacit;
-    forwardTrainingData();
-    trainNetwork(); //fyunkar inte
+    trainNetwork();
 }
 
 /*If using this for digit recognition, [1,1,0] this should be the pixels of 1 image.
