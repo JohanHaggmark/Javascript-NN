@@ -52,10 +52,6 @@ class Layer {
 //call this when running multiple sets of data. e.g. training data.
 function forwardTrainingData() {
     var data;
-    //visualize inputs
-    for (var i = 0; i < nn.inputs; i++) {
-        document.getElementById("input" + i.toString()).value = nn.inputLayer.trainingData[0][i];
-    }
     data = matrixMultiplication(nn.inputLayer.trainingData, nn.inputLayer.weights);
     data = sigmoid(data);
     for (var i = 0; i < nn.hiddenLayers.length; i++) {
@@ -64,10 +60,6 @@ function forwardTrainingData() {
         data = sigmoid(data);
     }
     nn.outputLayer.trainingData = data;
-    //visualize result
-    for (var i = 0; i < nn.outputs; i++) {
-        document.getElementById("output" + i.toString()).value = data[0][i];
-    }
     setMeanError(data, nn.facit);
     return data;
 }
