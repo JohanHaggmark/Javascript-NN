@@ -25,8 +25,13 @@ function forwardString(stringData) {
         data[i] = stringData[i];
     }
     let output = forwardData(data);
+
+    let string = "";
+    for(var i = 0; i < output.length; i++){
+        string += (Math.round(output[i])).toString();
+    }
     console.log(output);
-    document.getElementById("output").value = output;
+    document.getElementById("output").value = string;
 
 }
 
