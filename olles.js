@@ -1,6 +1,7 @@
 
-var nn
+var nn;
 function start() {
+    //NeuralNetwork(INPUT NODES, HIDDEN LAYER NODES, OUTPUT NODES, NUMBER OF HIDDEN LAYERS);
     nn = new NeuralNetwork(4, 64, 3, 2);
 }
 
@@ -37,7 +38,34 @@ function forwardData(data) {
         data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
         data = sigmoid(data);
     }
-
     return data;
+}
+
+
+function train() {
+    let batchSize = Number(document.getElementById("batchSize").value);
+    let rows = Number(document.getElementById("rounds").value);
+    var inputData = nn.inputLayer.trainingData;
+    var facit = nn.facit;
+    for (let i = 0; i < rows; i++) {
+        setAmountTrainingData(batchSize, inputData, facit);
+    }
+    nn.inputLayer.trainingData = inputData;
+    nn.facit = facit;
+}
+
+function setAmountTrainingData(batchSize, inputData, facit) {
+    let size = inputData.length;
+    let batchData = [];
+    let batchFacit = [];
+    let index;
+    for (let i = 0; i < batchSize; i++) {
+        index = Math.floor(Math.random() * (size - 1));
+        batchFacit.push(facit[index]);
+        batchData.push(inputData[index]);
+    }
+    nn.inputLayer.trainingData = batchData;
+    nn.facit = batchFacit;
+    trainNetwork();
 }
 

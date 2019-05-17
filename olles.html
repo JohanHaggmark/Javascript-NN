@@ -20,14 +20,31 @@
     </div>
     <div>
         <button onclick="forwardString(getElementById('input').value)">forward network</button>
-        <button onclick="storeStringAsTrainingData(getElementById('input').value, getElementById('output').value)">Store string</button>
+        <button onclick="storeStringAsTrainingData(getElementById('input').value, getElementById('output').value)">Store
+            string</button>
     </div>
     <div>
         <button onclick="trainNetwork()">Train Network</button>
     </div>
     <div>
         <textarea id="error">Error value</textarea>
-   </div>
+    </div>
+
+    <div>
+        <h2>methods to train the network with stored data:</h2>
+    </div>
+    <div>
+       
+        <p>Batch size tells how many training examples should be used each training round.</p>
+        <p>To use train method, training data should already been stored</p>
+    </div>
+    <div>
+        <textarea cols="10" rows="1" id="batchSize">batch size</textarea>
+        <textarea cols="10" rows="1" id="rounds">rounds</textarea>
+    </div>
+    <div>
+        <button onclick="train()">Train</button>
+    </div>
 
 </body>
 
