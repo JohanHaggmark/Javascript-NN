@@ -37,5 +37,7 @@ function forwardData(data) {
         data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
         data = sigmoid(data);
     }
+
     return data;
 }
+
