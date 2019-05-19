@@ -1,3 +1,4 @@
+var nnString;
 
 class NeuralNetwork {
     //This class works as a holder of all objects of Layer class.
@@ -69,13 +70,13 @@ function forward() {
     var data = [];
     for (var i = 0; i < nn.inputs; i++) {
         data[i] = document.getElementById("input" + i.toString()).value;
-    }   
+    }
     data = matrixMultiplication(data, nn.inputLayer.weights);
     data = sigmoid(data);
-        for (var i = 0; i < nn.hiddenLayers.length; i++) {
-            data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
-            data = sigmoid(data);
-        }
+    for (var i = 0; i < nn.hiddenLayers.length; i++) {
+        data = matrixMultiplication(data, nn.hiddenLayers[i].weights);
+        data = sigmoid(data);
+    }
     var facit = [];
     for (var i = 0; i < nn.outputs; i++) {
         facit[i] = document.getElementById("output" + i.toString()).value;
@@ -109,7 +110,7 @@ function trainNetwork() {
     //to get some effect of backpropagation, it should be run multiple times
     for (var i = 0; i < 10; i++) {
         forwardTrainingData();
-        backpropagation();      
+        backpropagation();
     }
 }
 
@@ -148,6 +149,15 @@ function createNN2() {
     drawGraph();
 }
 
+
+function save() {
+    nnString = JSON.stringify(nn);
+}
+
+function load() {
+    console.log(nnString);
+    nn = JSON.parse(nnString);
+}
 
 
 
